@@ -1,0 +1,274 @@
+/* --- Modern Faded Alert Banner --- */
+.alert-banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000; /* Above everything */
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 300px;
+  max-width: 500px;
+  padding: 12px 20px;
+
+  /* Design: Faded Glass Look */
+  background: rgba(
+    240,
+    249,
+    255,
+    0.9
+  ); /* Very light blue, slightly transparent */
+  backdrop-filter: blur(8px);
+  color: #0369a1; /* Deep blue text */
+  border: 1px solid rgba(186, 230, 253, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* Animation */
+  animation: slideDownFade 0.5s ease forwards;
+}
+
+.alert-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.alert-content i {
+  font-size: 1.1rem;
+  color: #0ea5e9;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  margin-left: 15px;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.alert-close:hover {
+  color: #ef4444;
+}
+
+/* Slide and Fade Animation */
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Optional: Subtle exit animation for JS */
+.alert-fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+/* --- Modal Layout Core --- */
+.modal-overlay {
+  display: none; /* Hidden by JS */
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.6) !important;
+  backdrop-filter: blur(5px);
+  z-index: 99999 !important; /* Force to top */
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  width: 90%;
+  max-width: 450px;
+  border-radius: 12px;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: modalIn 0.25s ease-out;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* --- Modal UI Elements --- */
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.close-btn {
+  font-size: 1.5rem;
+  color: #94a3b8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  color: #ef4444;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* --- Form Design --- */
+.input-field {
+  margin-bottom: 1.25rem;
+}
+.input-field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 0.5rem;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 0.625rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.input-field input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* --- Action Buttons --- */
+.btn-primary {
+  background: #4f46e5 !important;
+  color: white !important;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: #ffffff;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+/* --- Rounded Search Field --- */
+.search-container {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px; /* This makes it pill-shaped */
+  padding: 0 16px;
+  transition: all 0.2s ease;
+  width: 260px;
+}
+
+.search-container:focus-within {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.search-container i {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.search-container input {
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  outline: none;
+  width: 100%;
+  color: #1e293b;
+}
+
+/* --- Redesigned Clear All Button (Soft Danger) --- */
+.btn-danger-soft {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #fff1f2; /* Very light red */
+  color: #e11d48; /* Strong red text */
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn-danger-soft:hover {
+  background-color: #ffe4e6;
+  border-color: #fda4af;
+  color: #be123c;
+}
+
+.btn-danger-soft i {
+  font-size: 0.9rem;
+}
+
+/* --- Other Header Layout Fixes --- */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.button-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-cancel:hover {
+  background: #f1f5f9;
+}

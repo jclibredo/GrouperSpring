@@ -1,0 +1,112 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <title>Dashboard - Grouper</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+
+  <body class="dashboard-body">
+    <div th:replace="~{fragments :: header}"></div>
+
+    <div class="main-wrapper">
+      <div th:replace="~{fragments :: sidebar('dashboard')}"></div>
+
+      <main class="main-content">
+        <div class="page-header">
+          <h1>Dashboard Overview</h1>
+        </div>
+
+        <div class="stats-grid">
+          <!-- Dynamic AX Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${axCount != null ? #numbers.formatInteger(axCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total AX Records</p>
+          </div>
+
+          <!-- I10vx Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${i10vxCount != null ? #numbers.formatInteger(i10vxCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total I10vx Records</p>
+          </div>
+
+          <!-- I10 Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${i10Count != null ? #numbers.formatInteger(i10Count, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total I10 Records</p>
+          </div>
+
+          <!-- DRG Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${drgCount != null ? #numbers.formatInteger(drgCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total DRG Records</p>
+          </div>
+
+          <!-- dc Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${dcCount != null ? #numbers.formatInteger(dcCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total DC Records</p>
+          </div>
+
+          <!-- DCV Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${dcvCount != null ? #numbers.formatInteger(dcvCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total DCV Records</p>
+          </div>
+
+          <!-- DA Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${daCount != null ? #numbers.formatInteger(daCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total DA Records</p>
+          </div>
+
+           <!-- CCEX Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${ccexCount != null ? #numbers.formatInteger(ccexCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total CCEX Records</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script th:src="@{/js/sidebar.js}"></script>
+  </body>
+</html>

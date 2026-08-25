@@ -1,0 +1,88 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>I10 Library | Grouper</title>
+
+    <link rel="stylesheet" th:href="@{/css/home.css}" />
+    <link rel="stylesheet" th:href="@{/css/dynamicPage.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="dashboard-body">
+    <div th:replace="~{fragments :: header}"></div>
+
+    <div class="main-wrapper">
+      <div th:replace="~{fragments :: sidebar('i10')}"></div>
+
+      <main class="main-content">
+        <header class="page-header">
+          <div class="header-left">
+            <h1>I10 (I10) Registry</h1>
+          </div>
+
+          <div class="header-actions">
+            <div class="search-container">
+              <i class="fa fa-magnifying-glass"></i>
+              <input
+                type="text"
+                id="globalSearch"
+                placeholder="Search I10 records..."
+              />
+            </div>
+          </div>
+        </header>
+
+        <section class="table-container">
+          <table
+            id="i10Table"
+            class="display nowrap"
+            style="inline-size: 100%"
+          >
+            <thead>
+              <tr>
+                <th>CODE</th>
+                <th>MDC</th>
+                <th>PDC</th>
+                <th>CC</th>
+                <th>MAINCC</th>
+                <th>CCROW</th>
+                <th>HIVAX</th>
+                <th>TRAUMA</th>
+                <th>SEX</th>
+                <th>ACCPDX</th>
+                <th>AGEDUSE</th>
+                <th>AGEMIN</th>
+                <th>AGEMAX</th>
+                <th>AGEDMIN</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data populated dynamically via AJAX in i10.js -->
+            </tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+
+    <!-- External Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <!-- Application Scripts -->
+    <script th:src="@{/js/sidebar.js}"></script>
+    <script th:src="@{/js/i10.js}"></script>
+  </body>
+</html>

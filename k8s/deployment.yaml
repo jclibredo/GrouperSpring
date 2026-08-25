@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grouper-deployment
+  labels:
+    app: grouper
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: grouper
+  template:
+    metadata:
+      labels:
+        app: grouper
+    spec:
+      containers:
+      - name: grouper-app
+        image: grouper-app:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "384Mi"
+            cpu: "250m"
+          limits:
+            memory: "768Mi"
+            cpu: "500m"
+        
+        # 1. Startup Probe: Gives Spring up to 60 seconds (12 x 5s) to initialize
+        startupProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 12
+          
+        # 2. Readiness Probe: Checks if port 8080 is accepting traffic
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          periodSeconds: 10
+          
+        # 3. Liveness Probe: Checks if port 8080 is still alive
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          periodSeconds: 15

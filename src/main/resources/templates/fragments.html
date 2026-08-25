@@ -1,0 +1,105 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head> </head>
+  <body>
+    <header th:fragment="header" class="top-header">
+      <div class="header-left">
+        <button id="sidebarToggle" class="menu-btn" type="button">
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="header-logo">GROUPER</div>
+      </div>
+      <div class="header-user">
+        <span>Welcome, <strong th:text="${username}">User</strong></span>
+        <form th:action="@{/logout}" method="post" style="display: inline">
+          <button type="submit" class="logout-link">
+            <i class="fa fa-sign-out"></i>
+          </button>
+        </form>
+      </div>
+    </header>
+
+    <aside th:fragment="sidebar(activePage)" id="sidebar" class="side-nav">
+      <ul class="side-links">
+        <!-- Dashboard -->
+        <li th:class="${activePage == 'dashboard' ? 'active' : ''}">
+          <a th:href="@{/dashboard}"><i class="fa fa-gauge"></i> Dashboard</a>
+        </li>
+
+        <!-- Group: Library -->
+        <li
+          class="nav-group"
+          th:classappend="${activePage == 'ax' or activePage == 'icd10' ? 'open' : ''}"
+        >
+          <a
+            href="javascript:void(0);"
+            class="group-toggle"
+            onclick="toggleSubmenu(this)"
+          >
+            <i class="fa fa-book"></i>
+            Library
+            <i class="fa fa-chevron-down caret-icon"></i>
+          </a>
+          <ul class="sub-links">
+            <li th:class="${activePage == 'ax' ? 'active' : ''}">
+              <a th:href="@{/ax}"
+                ><i class="fa fa-table-list"></i> AX Management</a
+              >
+            </li>
+            <li th:class="${activePage == 'i10vx' ? 'active' : ''}">
+              <a th:href="@{/i10vx}"
+                ><i class="fa fa-file-medical"></i> ICD10 Management</a
+              >
+            </li>
+
+            <li th:class="${activePage == 'da' ? 'active' : ''}">
+              <a th:href="@{/da}"
+                ><i class="fa fa-asterisk"></i> Dagger Asterisk Management</a
+              >
+            </li>
+            <li th:class="${activePage == 'ccex' ? 'active' : ''}">
+              <a th:href="@{/ccex}"
+                ><i class="fa fa-code-branch"></i> CCE Management</a
+              >
+            </li>
+            <li th:class="${activePage == 'bmdc' ? 'active' : ''}">
+              <a th:href="@{/bmdc}"
+                ><i class="fa fa-code-branch"></i> BMDC Management</a
+              >
+            </li>
+            <li th:class="${activePage == 'i10' ? 'active' : ''}">
+              <a th:href="@{/i10}"
+                ><i class="fa fa-code-branch"></i> I10 Management</a
+              >
+            </li>
+
+            <li th:class="${activePage == 'drg' ? 'active' : ''}">
+              <a th:href="@{/drg}"
+                ><i class="fa fa-code-branch"></i> DRG Management</a
+              >
+            </li>
+
+            <li th:class="${activePage == 'dcv' ? 'active' : ''}">
+              <a th:href="@{/dcv}"
+                ><i class="fa fa-code-branch"></i> DCV Management</a
+              >
+            </li>
+            <li th:class="${activePage == 'dc' ? 'active' : ''}">
+              <a th:href="@{/dc}"
+                ><i class="fa fa-code-branch"></i> DC Management</a
+              >
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="#"><i class="fa fa-user"></i> Profile</a>
+        </li>
+        <li class="divider"></li>
+        <li>
+          <a href="#"><i class="fa fa-gear"></i> Settings</a>
+        </li>
+      </ul>
+    </aside>
+  </body>
+</html>

@@ -1,0 +1,257 @@
+/* Dashboard Specific Styles */
+.main-header {
+  background-color: #cbd6e0;
+  color: rgb(221, 191, 191);
+  inline-size: 100%;
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 1000;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  block-size: 60px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #3498db;
+}
+
+.logout-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 4px;
+  margin-inline-start: 10px;
+  cursor: pointer;
+  inline-size: auto;
+  /* Overrides global button width */
+}
+
+.content {
+  margin-block-start: 80px;
+  padding: 2rem;
+  inline-size: 80%;
+  max-inline-size: 1200px;
+}
+
+.welcome-banner {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  margin-block-end: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border-inline-start: 5px solid #3498db;
+}
+
+/* Layout Reset */
+.dashboard-body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  block-size: 100vh;
+  overflow: hidden;
+  /* Prevent body scroll, scroll main-content instead */
+}
+
+/* 1. Top Header */
+.top-header {
+  block-size: 60px;
+  background: #2cac61;
+  border-block-end: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 25px;
+  z-index: 100;
+}
+
+.header-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fdfeff;
+  letter-spacing: 1px;
+}
+
+/* 2. Wrapper for Sidebar + Content */
+.main-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 3. Side Navigation */
+.side-nav {
+  inline-size: 240px;
+  background: #2cac61;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding-block-start: 20px;
+}
+
+/* --- Toggle Button Styling --- */
+.menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none; /* Hidden on desktop */
+  margin-inline-end: 15px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Ensure the button is visible on small screens */
+@media (max-width: 768px) {
+  /* Ensure the header doesn't block clicks */
+  .top-header {
+    z-index: 1100 !important;
+  }
+
+  .header-left {
+    position: relative;
+    z-index: 1101;
+  }
+
+  .menu-btn {
+    display: block !important;
+    position: relative;
+    z-index: 1200; /* Highest level */
+    cursor: pointer;
+    padding: 10px; /* Makes the "hit area" larger for thumbs */
+    pointer-events: auto !important;
+  }
+
+  .side-nav {
+    position: fixed;
+    inset-inline-start: -240px;
+    inset-block-start: 60px;
+    inset-block-end: 0;
+    inline-size: 240px;
+    background: #2cac61;
+    z-index: 1050; /* Between header and content */
+    transition: left 0.3s ease-in-out;
+    display: block !important;
+  }
+
+  .side-nav.active {
+    inset-inline-start: 0 !important;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+  }
+}
+.side-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-links li a {
+  display: flex;
+  align-items: center;
+  padding: 15px 25px;
+  color: #bdc3c7;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.side-links li i {
+  inline-size: 30px;
+}
+
+.side-links li:hover a,
+.side-links li.active a {
+  background: #576962;
+  color: white;
+}
+
+.side-links li.active {
+  border-inline-start: 4px solid #3498db;
+}
+
+/* Submenu Styling */
+.side-links .sub-links {
+  display: none;
+  list-style: none;
+  padding-inline-start: 20px; /* Indent sub-items */
+}
+
+/* Show sub-links when parent group has 'open' class */
+.side-links .nav-group.open .sub-links {
+  display: block;
+}
+
+/* Caret Icon Rotation */
+.group-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.caret-icon {
+  transition: transform 0.3s ease;
+  font-size: 0.8rem;
+}
+
+.nav-group.open .caret-icon {
+  transform: rotate(180deg);
+}
+
+.divider {
+  block-size: 1px;
+  background: #3e4f5f;
+  margin: 10px 0;
+}
+
+/* 4. Main Content Area */
+.main-content {
+  flex: 1;
+  background: #f4f7f6;
+  padding: 30px;
+  overflow-y: auto;
+  /* Scrollable content */
+}
+
+.logout-link {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-inline-start: 15px;
+}
