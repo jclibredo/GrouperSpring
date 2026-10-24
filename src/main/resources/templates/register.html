@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <div class="auth-card" style="width: 450px;">
+    <div class="auth-card" style="inline-size: 450px;">
         <h2>Create Account</h2>
         <form th:action="@{/register}" th:object="${user}" method="post">
 
@@ -25,7 +25,7 @@
 
             <input type="text" th:field="*{contact}" placeholder="Contact Number" required>
 
-            <button type="submit" style="margin-top: 15px;">Sign Up</button>
+            <button type="submit" style="margin-block-start: 15px;">Sign Up</button>
         </form>
         <div class="link">
             Already have an account? <a th:href="@{/login}">Login here</a>

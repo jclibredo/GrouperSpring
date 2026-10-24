@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import phil.grouper.csvreader.AxCsvReaderService;
 import phil.grouper.csvreader.I10CsvReaderService;
 import phil.grouper.csvreader.I10vxCsvReaderService;
+import phil.grouper.csvreader.PrpdcCsvReaderService;
 import phil.grouper.csvreader.DrgCsvReaderService;
 import phil.grouper.csvreader.DcCsvReaderService;
 import phil.grouper.csvreader.DcvCsvReaderService;
 import phil.grouper.csvreader.DaCsvReaderService;
 import phil.grouper.csvreader.CcexCsvReaderService;
+import phil.grouper.csvreader.CclmCsvReaderService;
 
 @Controller
 public class DashboardViewController {
@@ -23,27 +25,24 @@ public class DashboardViewController {
     private String csvDirectoryPath;
 
     private final AxCsvReaderService csvReaderService;
-
     private final I10vxCsvReaderService i10vxCsvReaderService;
-
     private final I10CsvReaderService i10CsvReaderService;
-
     private final DrgCsvReaderService drgCsvReaderService;
-
     private final DcCsvReaderService dcCsvReaderService;
-
     private final DcvCsvReaderService dcvCsvReaderService;
-
     private final DaCsvReaderService daCsvReaderService;
-
     private final CcexCsvReaderService ccexCsvReaderService;
+    private final PrpdcCsvReaderService prpdcCsvReaderService;
+    private final CclmCsvReaderService cclmCsvReaderService;
 
     public DashboardViewController(AxCsvReaderService csvReaderService, I10vxCsvReaderService i10vxCsvReaderService,
             I10CsvReaderService i10CsvReaderService, DrgCsvReaderService drgCsvReaderService,
             DcCsvReaderService dcCsvReaderService,
             DcvCsvReaderService dcvCsvReaderService,
             DaCsvReaderService daCsvReaderService,
-            CcexCsvReaderService ccexCsvReaderService) {
+            CcexCsvReaderService ccexCsvReaderService,
+            PrpdcCsvReaderService prpdcCsvReaderService,
+            CclmCsvReaderService cclmCsvReaderService) {
         this.csvReaderService = csvReaderService;
         this.i10vxCsvReaderService = i10vxCsvReaderService;
         this.i10CsvReaderService = i10CsvReaderService;
@@ -52,6 +51,8 @@ public class DashboardViewController {
         this.dcvCsvReaderService = dcvCsvReaderService;
         this.daCsvReaderService = daCsvReaderService;
         this.ccexCsvReaderService = ccexCsvReaderService;
+        this.prpdcCsvReaderService = prpdcCsvReaderService;
+        this.cclmCsvReaderService = cclmCsvReaderService;
     }
 
     @GetMapping("/dashboard")
@@ -68,6 +69,8 @@ public class DashboardViewController {
         long dcvCount = dcvCsvReaderService.getDcvRecordCount(csvDirectoryPath, "drg.csv");
         long daCount = daCsvReaderService.getDaRecordCount(csvDirectoryPath, "da.csv");
         long ccexCount = ccexCsvReaderService.getCcexRecordCount(csvDirectoryPath, "ccex.csv");
+        long prpdcCount = prpdcCsvReaderService.getPrpdcRecordCount(csvDirectoryPath, "prpdc.csv");
+        long cclmCount = cclmCsvReaderService.getRecordCount(csvDirectoryPath, "cclm.csv");
         model.addAttribute("axCount", axCount);
         model.addAttribute("i10vxCount", i10vxCount);
         model.addAttribute("i10Count", i10Count);
@@ -76,6 +79,8 @@ public class DashboardViewController {
         model.addAttribute("dcvCount", dcvCount);
         model.addAttribute("daCount", daCount);
         model.addAttribute("ccexCount", ccexCount);
+        model.addAttribute("prpdcCount", prpdcCount);
+        model.addAttribute("cclmCount", cclmCount);
 
         // Resolves src/main/resources/templates/dashboard.html
         return "dashboard";
@@ -125,6 +130,16 @@ public class DashboardViewController {
     @GetMapping("/dc")
     public String showDcPage() {
         return "dc"; // Renders templates/dcv.html
+    }
+
+    @GetMapping("/prpdc")
+    public String showPrpdcPage() {
+        return "prpdc"; // Renders templates/prpdc.html
+    }
+
+    @GetMapping("/cclm")
+    public String showCclmPage() {
+        return "cclm"; // Renders templates/cclm.html
     }
 
 }

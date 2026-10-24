@@ -12,7 +12,6 @@ public class WebController {
         // Adding data to the "Model" makes it available in the HTML
         model.addAttribute("username", "Java Developer");
         model.addAttribute("status", "Active");
-
         // This returns the name of the HTML file (without the .html extension)
         return "index"; 
     }

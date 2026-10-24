@@ -81,10 +81,8 @@ public class I10vxCsvReaderService {
                 .filter(item -> {
                     boolean matchesDesc = !hasDesc || (item.getDesc() != null
                             && item.getDesc().toLowerCase().contains(descParam.trim().toLowerCase()));
-
                     boolean matchesValid = !hasValidCode || (item.getValidCode() != null
                             && item.getValidCode().trim().equalsIgnoreCase(validCodeParam.trim()));
-
                     return matchesDesc && matchesValid;
                 })
                 .toList();

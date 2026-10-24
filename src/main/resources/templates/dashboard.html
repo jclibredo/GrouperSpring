@@ -94,7 +94,7 @@
             <p>Total DA Records</p>
           </div>
 
-           <!-- CCEX Record Count Card -->
+          <!-- CCEX Record Count Card -->
           <div class="stat-card">
             <h3
               th:text="${ccexCount != null ? #numbers.formatInteger(ccexCount, 1, 'COMMA') : 0}"
@@ -102,6 +102,24 @@
               0
             </h3>
             <p>Total CCEX Records</p>
+          </div>
+          <!-- PRPDC Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${prpdcCount != null ? #numbers.formatInteger(prpdcCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total PRPDC Records</p>
+          </div>
+          <!-- CCLM Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${cclmCount != null ? #numbers.formatInteger(cclmCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total CCLM Records</p>
           </div>
         </div>
       </main>

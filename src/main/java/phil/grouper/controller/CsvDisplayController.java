@@ -12,25 +12,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import phil.grouper.csvbinder.ax;
 import phil.grouper.csvbinder.bmdc;
 import phil.grouper.csvbinder.ccex;
+import phil.grouper.csvbinder.cclm;
 import phil.grouper.csvbinder.da;
 import phil.grouper.csvbinder.dcv;
 import phil.grouper.csvbinder.drg;
 import phil.grouper.csvbinder.dc;
 import phil.grouper.csvbinder.i10;
 import phil.grouper.csvbinder.i10vx;
+import phil.grouper.csvbinder.prpdc;
 import phil.grouper.csvreader.AxCsvReaderService;
 import phil.grouper.csvreader.BmdcCsvReaderService;
 import phil.grouper.csvreader.CcexCsvReaderService;
+import phil.grouper.csvreader.CclmCsvReaderService;
 import phil.grouper.csvreader.DaCsvReaderService;
 import phil.grouper.csvreader.DcCsvReaderService;
 import phil.grouper.csvreader.DcvCsvReaderService;
 import phil.grouper.csvreader.DrgCsvReaderService;
 import phil.grouper.csvreader.I10CsvReaderService;
 import phil.grouper.csvreader.I10vxCsvReaderService;
+import phil.grouper.csvreader.PrpdcCsvReaderService;
 
 @RestController
 @RequestMapping("/api/csv")
@@ -48,6 +51,8 @@ public class CsvDisplayController {
     private final DrgCsvReaderService drgCsvReaderService;
     private final DcvCsvReaderService dcvCsvReaderService;
     private final DcCsvReaderService dcCsvReaderService;
+    private final PrpdcCsvReaderService prpdcCsvReaderService;
+    private final CclmCsvReaderService cclmCsvReaderService;
 
     public CsvDisplayController(
             AxCsvReaderService csvReaderService,
@@ -58,7 +63,9 @@ public class CsvDisplayController {
             I10CsvReaderService i10CsvReaderService,
             DrgCsvReaderService drgCsvReaderService,
             DcvCsvReaderService dcvCsvReaderService,
-            DcCsvReaderService dcCsvReaderService) {
+            DcCsvReaderService dcCsvReaderService,
+            PrpdcCsvReaderService prpdcCsvReaderService,
+            CclmCsvReaderService cclmCsvReaderService) {
         this.csvReaderService = csvReaderService;
         this.i10vxCsvReaderService = i10vxCsvReaderService;
         this.daCsvReaderService = daCsvReaderService;
@@ -68,6 +75,8 @@ public class CsvDisplayController {
         this.drgCsvReaderService = drgCsvReaderService;
         this.dcvCsvReaderService = dcvCsvReaderService;
         this.dcCsvReaderService = dcCsvReaderService;
+        this.prpdcCsvReaderService = prpdcCsvReaderService;
+        this.cclmCsvReaderService = cclmCsvReaderService;
     }
 
     // Supported endpoint patterns:
@@ -209,7 +218,8 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<dc> records = dcCsvReaderService.readAndFilter(csvDirectoryPath, fileName, mdc, dc, dccol, drgx, cname, drgx2);
+        List<dc> records = dcCsvReaderService.readAndFilter(csvDirectoryPath, fileName, mdc, dc, dccol, drgx, cname,
+                drgx2);
         return ResponseEntity.ok(records);
     }
 
@@ -252,4 +262,38 @@ public class CsvDisplayController {
         return ResponseEntity.ok(records);
     }
 
+    @GetMapping("/prpdc/display")
+    public ResponseEntity<?> displayPrpdcCsvContent(
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String mdc,
+            @RequestParam(required = false) String pdc) {
+        final String fileName = "prpdc.csv";
+        Path fullPath = Paths.get(csvDirectoryPath, fileName);
+        if (!Files.exists(fullPath)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
+        }
+        // Returns filtered records or full list based on provided query parameters
+        List<prpdc> records = prpdcCsvReaderService.readAndFilter(csvDirectoryPath, fileName,
+                code, mdc, pdc);
+        return ResponseEntity.ok(records);
+    }
+
+    @GetMapping("/cclm/display")
+    public ResponseEntity<?> displayCclmCsvContent(
+            @RequestParam(required = false) String ccrow,
+            @RequestParam(required = false) String ccl) {
+        final String fileName = "cclm.csv";
+        Path fullPath = Paths.get(csvDirectoryPath, fileName);
+        if (!Files.exists(fullPath)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
+        }
+        // Returns filtered records or full list based on provided query parameters
+        List<cclm> records = cclmCsvReaderService.readAndFilter(csvDirectoryPath, fileName,
+                ccrow, ccl);
+        return ResponseEntity.ok(records);
+    }
 }

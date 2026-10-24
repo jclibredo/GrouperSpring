@@ -16,6 +16,7 @@ public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    @SuppressWarnings("unused")
     private final JobQueueService jobQueueService;
 
     public AuthController(

@@ -89,6 +89,18 @@
                 ><i class="fa fa-code-branch"></i> DC Management</a
               >
             </li>
+
+            <li th:class="${activePage == 'prpdc' ? 'active' : ''}">
+              <a th:href="@{/prpdc}"
+                ><i class="fa fa-code-branch"></i> PRPDC Management</a
+              >
+            </li>
+
+            <li th:class="${activePage == 'cclm' ? 'active' : ''}">
+              <a th:href="@{/cclm}"
+                ><i class="fa fa-code-branch"></i> CCLM Management</a
+              >
+            </li>
           </ul>
         </li>
 

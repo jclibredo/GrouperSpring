@@ -4,13 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AX Library | Grouper</title>
-
     <link rel="stylesheet" th:href="@{/css/home.css}" />
     <link rel="stylesheet" th:href="@{/css/dynamicPage.css}" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
-    />
+    <link rel="stylesheet" th:href="@{/css/jquery.dataTables.min.css}" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -60,7 +56,7 @@
         </header>
 
         <section class="table-container">
-          <table id="axTable" class="display nowrap" style="width: 100%">
+          <table id="axTable" class="display nowrap" style="inline-size: 100%">
             <thead>
               <tr>
                 <th>AX Code</th>
@@ -75,9 +71,9 @@
       </main>
     </div>
 
-    <!-- External Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+ <!-- Local External Scripts -->
+    <script th:src="@{/js/jquery-3.7.0.min.js}"></script>
+    <script th:src="@{/js/jquery.dataTables.min.js}"></script>
 
     <!-- Application Scripts -->
     <script th:src="@{/js/sidebar.js}"></script>
