@@ -10,16 +10,31 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import com.opencsv.bean.CsvToBeanBuilder;
 import phil.grouper.csvbinder.proc;
+import phil.grouper.utility.Utility;
 
 @Service
 public class ProcCsvReaderService {
 
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
+
+    private final Utility utility;
+
+    public ProcCsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "proc.csv";
+
     @Cacheable(value = "procIndexedCache", key = "#fileName")
-    public Map<String, List<proc>> getIndexedProcData(String csvDirectoryPath, String fileName) {
+    public Map<String, List<proc>> getIndexedProcData() {
         System.out.println("--> Building Code Index for PROC CSV from DISK...");
 
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
@@ -141,9 +156,8 @@ public class ProcCsvReaderService {
      * 'validcode'
      */
     public List<proc> readAndFilter(
-            String csvDirectoryPath,
-            String fileName,
             String codeParam,
+            String orpParam,
             String orptypeParam,
             String sexParam,
             String siteParam,
@@ -153,9 +167,10 @@ public class ProcCsvReaderService {
             String descParam,
             String drguseParam,
             String mayunParam) {
-        Map<String, List<proc>> indexMap = getIndexedProcData(csvDirectoryPath, fileName);
+        Map<String, List<proc>> indexMap = getIndexedProcData();
         // Step 2: Apply secondary filter for desc and validcode if provided
         boolean hasCode = codeParam != null && !codeParam.trim().isEmpty();
+        boolean hasOrp = orpParam != null && !orpParam.trim().isEmpty();
         boolean hasOrptype = orptypeParam != null && !orptypeParam.trim().isEmpty();
         boolean hasSex = sexParam != null && !sexParam.trim().isEmpty();
         boolean hasSite = siteParam != null && !siteParam.trim().isEmpty();
@@ -168,6 +183,8 @@ public class ProcCsvReaderService {
 
         @SuppressWarnings("null")
         String cleanCode = hasCode ? codeParam.trim().toUpperCase() : "";
+        @SuppressWarnings("null")
+        String cleanOrp = hasOrp ? orpParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
         String cleanOrptype = hasOrptype ? orptypeParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
@@ -188,10 +205,12 @@ public class ProcCsvReaderService {
         String cleanMayun = hasMayun ? mayunParam.trim().toUpperCase() : "";
 
         // Case 1: Search by all parameters
-        if (hasCode && hasOrptype && hasSex && hasSite && hasProcgr && hasPcpart && hasExtlev && hasDesc && hasDrguse
+        if (hasCode && hasOrp && hasOrptype && hasSex && hasSite && hasProcgr && hasPcpart && hasExtlev && hasDesc
+                && hasDrguse
                 && hasMayun) {
             return indexMap.getOrDefault("BOTH:"
                     + cleanCode + "_"
+                    + cleanOrp + "_"
                     + cleanOrptype + "_"
                     + cleanSex + "_"
                     + cleanSite + "_"
@@ -206,6 +225,10 @@ public class ProcCsvReaderService {
         // Case 2: Search by Code only
         if (hasCode) {
             return indexMap.getOrDefault("CODE:" + cleanCode, Collections.emptyList());
+        }
+        // Case 3: Search by Orp only
+        if (hasOrp) {
+            return indexMap.getOrDefault("ORP:" + cleanOrp, Collections.emptyList());
         }
         // Case 3: Search by Orptype only
         if (hasOrptype) {
@@ -247,8 +270,8 @@ public class ProcCsvReaderService {
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getPROCRecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedProcData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getProcRecordCount() {
+        return getIndexedProcData().getOrDefault("ALL", Collections.emptyList()).size();
     }
 
 }

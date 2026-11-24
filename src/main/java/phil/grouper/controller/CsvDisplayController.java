@@ -22,6 +22,7 @@ import phil.grouper.csvbinder.drg;
 import phil.grouper.csvbinder.dc;
 import phil.grouper.csvbinder.i10;
 import phil.grouper.csvbinder.i10vx;
+import phil.grouper.csvbinder.proc;
 import phil.grouper.csvbinder.prpdc;
 import phil.grouper.csvreader.AxCsvReaderService;
 import phil.grouper.csvreader.BmdcCsvReaderService;
@@ -33,6 +34,7 @@ import phil.grouper.csvreader.DcvCsvReaderService;
 import phil.grouper.csvreader.DrgCsvReaderService;
 import phil.grouper.csvreader.I10CsvReaderService;
 import phil.grouper.csvreader.I10vxCsvReaderService;
+import phil.grouper.csvreader.ProcCsvReaderService;
 import phil.grouper.csvreader.PrpdcCsvReaderService;
 
 @RestController
@@ -53,6 +55,7 @@ public class CsvDisplayController {
     private final DcCsvReaderService dcCsvReaderService;
     private final PrpdcCsvReaderService prpdcCsvReaderService;
     private final CclmCsvReaderService cclmCsvReaderService;
+    private final ProcCsvReaderService procCsvReaderService;
 
     public CsvDisplayController(
             AxCsvReaderService csvReaderService,
@@ -65,7 +68,8 @@ public class CsvDisplayController {
             DcvCsvReaderService dcvCsvReaderService,
             DcCsvReaderService dcCsvReaderService,
             PrpdcCsvReaderService prpdcCsvReaderService,
-            CclmCsvReaderService cclmCsvReaderService) {
+            CclmCsvReaderService cclmCsvReaderService,
+            ProcCsvReaderService procCsvReaderService) {
         this.csvReaderService = csvReaderService;
         this.i10vxCsvReaderService = i10vxCsvReaderService;
         this.daCsvReaderService = daCsvReaderService;
@@ -77,6 +81,7 @@ public class CsvDisplayController {
         this.dcCsvReaderService = dcCsvReaderService;
         this.prpdcCsvReaderService = prpdcCsvReaderService;
         this.cclmCsvReaderService = cclmCsvReaderService;
+        this.procCsvReaderService = procCsvReaderService;
     }
 
     // Supported endpoint patterns:
@@ -98,7 +103,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list depending on query params provided
-        List<ax> records = csvReaderService.readAndFilter(csvDirectoryPath, fileName, ax, code);
+        List<ax> records = csvReaderService.readAndFilter(ax, code);
         return ResponseEntity.ok(records);
     }
 
@@ -115,7 +120,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<i10vx> records = i10vxCsvReaderService.readAndFilter(csvDirectoryPath, fileName, code, desc, validcode);
+        List<i10vx> records = i10vxCsvReaderService.readAndFilter(code, desc, validcode);
         return ResponseEntity.ok(records);
     }
 
@@ -133,7 +138,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<da> records = daCsvReaderService.readAndFilter(csvDirectoryPath, fileName, dagger, asterisk, pdx, sdx);
+        List<da> records = daCsvReaderService.readAndFilter(dagger, asterisk, pdx, sdx);
         return ResponseEntity.ok(records);
     }
 
@@ -149,7 +154,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<ccex> records = ccexCsvReaderService.readAndFilter(csvDirectoryPath, fileName, sdx, pdx);
+        List<ccex> records = ccexCsvReaderService.readAndFilter(sdx, pdx);
         return ResponseEntity.ok(records);
     }
 
@@ -169,7 +174,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<bmdc> records = bmdcCsvReaderService.readAndFilter(csvDirectoryPath, fileName, code, mdcmale, pdcmale,
+        List<bmdc> records = bmdcCsvReaderService.readAndFilter(code, mdcmale, pdcmale,
                 mdcfem, pdcfem, desc);
         return ResponseEntity.ok(records);
     }
@@ -197,7 +202,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<i10> records = i10CsvReaderService.readAndFilter(csvDirectoryPath, fileName, code, mdc, pdc, cc, maincc,
+        List<i10> records = i10CsvReaderService.readAndFilter(code, mdc, pdc, cc, maincc,
                 ccrow, hivax, sex, accpdx, ageduse, agemin, agemax, agedmin);
         return ResponseEntity.ok(records);
     }
@@ -218,7 +223,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<dc> records = dcCsvReaderService.readAndFilter(csvDirectoryPath, fileName, mdc, dc, dccol, drgx, cname,
+        List<dc> records = dcCsvReaderService.readAndFilter(mdc, dc, dccol, drgx, cname,
                 drgx2);
         return ResponseEntity.ok(records);
     }
@@ -235,7 +240,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<dcv> records = dcvCsvReaderService.readAndFilter(csvDirectoryPath, fileName, pdrg, fdrg);
+        List<dcv> records = dcvCsvReaderService.readAndFilter(pdrg, fdrg);
         return ResponseEntity.ok(records);
     }
 
@@ -257,7 +262,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<drg> records = drgCsvReaderService.readAndFilter(csvDirectoryPath, fileName, mdc, dc, drg, rw, wtlos,
+        List<drg> records = drgCsvReaderService.readAndFilter(mdc, dc, drg, rw, wtlos,
                 ot, mdf, drgname);
         return ResponseEntity.ok(records);
     }
@@ -275,7 +280,7 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<prpdc> records = prpdcCsvReaderService.readAndFilter(csvDirectoryPath, fileName,
+        List<prpdc> records = prpdcCsvReaderService.readAndFilter(
                 code, mdc, pdc);
         return ResponseEntity.ok(records);
     }
@@ -292,8 +297,33 @@ public class CsvDisplayController {
                     .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
         }
         // Returns filtered records or full list based on provided query parameters
-        List<cclm> records = cclmCsvReaderService.readAndFilter(csvDirectoryPath, fileName,
-                ccrow, ccl);
+        List<cclm> records = cclmCsvReaderService.readAndFilter(ccrow, ccl);
+        return ResponseEntity.ok(records);
+    }
+
+    @GetMapping("/proc/display")
+    public ResponseEntity<?> displayProcCsvContent(
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String orp,
+            @RequestParam(required = false) String orptype,
+            @RequestParam(required = false) String sex,
+            @RequestParam(required = false) String site,
+            @RequestParam(required = false) String procgr,
+            @RequestParam(required = false) String pcpart,
+            @RequestParam(required = false) String extlev,
+            @RequestParam(required = false) String desc,
+            @RequestParam(required = false) String drguse,
+            @RequestParam(required = false) String mayun) {
+        final String fileName = "proc.csv";
+        Path fullPath = Paths.get(csvDirectoryPath, fileName);
+        if (!Files.exists(fullPath)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Error: File '" + fileName + "' does not exist at path: " + fullPath.toAbsolutePath());
+        }
+        // Returns filtered records or full list based on provided query parameters
+        List<proc> records = procCsvReaderService.readAndFilter(
+                code, orp, orptype, sex, site, procgr, pcpart, extlev, desc, drguse, mayun);
         return ResponseEntity.ok(records);
     }
 }

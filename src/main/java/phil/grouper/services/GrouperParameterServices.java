@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,8 +26,11 @@ public class GrouperParameterServices {
     @Value("${app.upload.dir}") // This pulls "D:/REPORTS" from application.properties
     private String reportPath;
 
-    @Autowired
-    private Utility utility;
+    private final Utility utility;
+
+    GrouperParameterServices(Utility utility) {
+        this.utility = utility;
+    }
 
     @Cacheable(value = "parameters")
     public List<GrouperParameter> readGrouperParameters() {

@@ -11,12 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 
 import phil.grouper.csvbinder.dcv;
+import phil.grouper.utility.Utility;
 
 @Service
 public class DcvCsvReaderService {
@@ -26,8 +28,20 @@ public class DcvCsvReaderService {
      * - Key "CODE:{codeVal}" -> List of items with that 'code'
      * - Key "BOTH:{ax}_{code}" -> List of items matching both
      */
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
+
+    private final Utility utility;
+
+    public DcvCsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "dcv.csv";
+
     @Cacheable(value = "dcvIndexedCache", key = "#fileName")
-    public Map<String, List<dcv>> getIndexedDcvData(String csvDirectoryPath, String fileName) {
+    public Map<String, List<dcv>> getIndexedDcvData() {
         System.out.println("--> Building Multi-Index for DCV CSV from DISK...");
 
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
@@ -78,11 +92,9 @@ public class DcvCsvReaderService {
      * O(1) Instant Lookup using cached multi-indexes
      */
     public List<dcv> readAndFilter(
-            String csvDirectoryPath,
-            String fileName,
             String pdrgParam,
             String fdrgParam) {
-        Map<String, List<dcv>> indexMap = getIndexedDcvData(csvDirectoryPath, fileName);
+        Map<String, List<dcv>> indexMap = getIndexedDcvData();
 
         boolean hasPdrg = pdrgParam != null && !pdrgParam.trim().isEmpty();
         boolean hasFdrg = fdrgParam != null && !fdrgParam.trim().isEmpty();
@@ -111,7 +123,7 @@ public class DcvCsvReaderService {
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getDcvRecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedDcvData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getDcvRecordCount() {
+        return getIndexedDcvData().getOrDefault("ALL", Collections.emptyList()).size();
     }
 }

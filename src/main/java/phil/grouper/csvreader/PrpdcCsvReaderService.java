@@ -10,16 +10,30 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import com.opencsv.bean.CsvToBeanBuilder;
 import phil.grouper.csvbinder.prpdc;
+import phil.grouper.utility.Utility;
 
 @Service
 public class PrpdcCsvReaderService {
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
+
+    private final Utility utility;
+
+    public PrpdcCsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "prpdc.csv";
 
     @Cacheable(value = "prpdcIndexedCache", key = "#fileName")
-    public Map<String, List<prpdc>> getIndexedPrpdcData(String csvDirectoryPath, String fileName) {
+    public Map<String, List<prpdc>> getIndexedPrpdcData() {
         System.out.println("--> Building Multi-Index for PRPDC CSV from DISK...");
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
         if (!Files.exists(fullPath)) {
@@ -62,12 +76,13 @@ public class PrpdcCsvReaderService {
             throw new RuntimeException("Failed to read CSV file at " + fullPath, e);
         }
     }
+
     /**
      * O(1) Instant Lookup using cached multi-indexes
      */
-    public List<prpdc> readAndFilter(String csvDirectoryPath, String fileName, String codeParam, String mdcParam,
+    public List<prpdc> readAndFilter(String codeParam, String mdcParam,
             String pdcParam) {
-        Map<String, List<prpdc>> indexMap = getIndexedPrpdcData(csvDirectoryPath, fileName);
+        Map<String, List<prpdc>> indexMap = getIndexedPrpdcData();
         boolean hasCode = codeParam != null && !codeParam.trim().isEmpty();
         boolean hasMdc = mdcParam != null && !mdcParam.trim().isEmpty();
         boolean hasPdc = pdcParam != null && !pdcParam.trim().isEmpty();
@@ -103,7 +118,7 @@ public class PrpdcCsvReaderService {
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getPrpdcRecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedPrpdcData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getPrpdcRecordCount() {
+        return getIndexedPrpdcData().getOrDefault("ALL", Collections.emptyList()).size();
     }
 }

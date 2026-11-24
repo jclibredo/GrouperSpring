@@ -10,20 +10,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.Collections;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import com.opencsv.bean.CsvToBeanBuilder;
 import phil.grouper.csvbinder.i10vx;
+import phil.grouper.utility.Utility;
 
 @Service
 public class I10vxCsvReaderService {
 
-    @Cacheable(value = "i10vxIndexedCache", key = "#fileName")
-    public Map<String, List<i10vx>> getIndexedI10vxData(String csvDirectoryPath, String fileName) {
-        System.out.println("--> Building Code Index for I10VX CSV from DISK...");
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
 
+    private final Utility utility;
+
+    public I10vxCsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "i10vx.csv";
+
+    @Cacheable(value = "i10vxIndexedCache", key = "#fileName")
+    public Map<String, List<i10vx>> getIndexedI10vxData() {
+        System.out.println("--> Building Code Index for I10VX CSV from DISK...");
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
         if (!Files.exists(fullPath)) {
+            System.out.println("YOU ARE HERE BRO");
             return Collections.emptyMap();
         }
 
@@ -56,9 +71,9 @@ public class I10vxCsvReaderService {
      * Fast index retrieval by 'code', with fallback stream filter for 'desc' or
      * 'validcode'
      */
-    public List<i10vx> readAndFilter(String csvDirectoryPath, String fileName, String codeParam, String descParam,
+    public List<i10vx> readAndFilter(String codeParam, String descParam,
             String validCodeParam) {
-        Map<String, List<i10vx>> indexMap = getIndexedI10vxData(csvDirectoryPath, fileName);
+        Map<String, List<i10vx>> indexMap = getIndexedI10vxData();
 
         List<i10vx> candidates;
 
@@ -90,8 +105,8 @@ public class I10vxCsvReaderService {
                 .toList();
     }
 
-    public long getI10vxRecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedI10vxData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getI10vxRecordCount() {
+        return getIndexedI10vxData().getOrDefault("ALL", Collections.emptyList()).size();
     }
 
 }

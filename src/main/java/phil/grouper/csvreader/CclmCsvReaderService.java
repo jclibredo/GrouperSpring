@@ -10,16 +10,31 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import com.opencsv.bean.CsvToBeanBuilder;
 import phil.grouper.csvbinder.cclm;
+import phil.grouper.utility.Utility;
 
 @Service
 public class CclmCsvReaderService {
 
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
+
+    private final Utility utility;
+
+    public CclmCsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "cclm.csv";
+
     @Cacheable(value = "cclmIndexedCache", key = "#fileName")
-    public Map<String, List<cclm>> getIndexedCclmData(String csvDirectoryPath, String fileName) {
+    public Map<String, List<cclm>> getIndexedCclmData() {
         System.out.println("--> Building Multi-Index for CCLM CSV from DISK...");
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
         if (!Files.exists(fullPath)) {
@@ -59,8 +74,8 @@ public class CclmCsvReaderService {
     /**
      * O(1) Instant Lookup using cached multi-indexes
      */
-    public List<cclm> readAndFilter(String csvDirectoryPath, String fileName, String ccrowParam, String cclParam) {
-        Map<String, List<cclm>> indexMap = getIndexedCclmData(csvDirectoryPath, fileName);
+    public List<cclm> readAndFilter(String ccrowParam, String cclParam) {
+        Map<String, List<cclm>> indexMap = getIndexedCclmData();
         boolean hasCcrow = ccrowParam != null && !ccrowParam.trim().isEmpty();
         boolean hasCcl = cclParam != null && !cclParam.trim().isEmpty();
         @SuppressWarnings("null")
@@ -84,8 +99,8 @@ public class CclmCsvReaderService {
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getRecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedCclmData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getRecordCount() {
+        return getIndexedCclmData().getOrDefault("ALL", Collections.emptyList()).size();
     }
 
 }

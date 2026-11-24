@@ -121,6 +121,15 @@
             </h3>
             <p>Total CCLM Records</p>
           </div>
+          <!-- PROC Record Count Card -->
+          <div class="stat-card">
+            <h3
+              th:text="${procCount != null ? #numbers.formatInteger(procCount, 1, 'COMMA') : 0}"
+            >
+              0
+            </h3>
+            <p>Total PROC Records</p>
+          </div>
         </div>
       </main>
     </div>

@@ -11,15 +11,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 
 import phil.grouper.csvbinder.bmdc;
+import phil.grouper.utility.Utility;
 
 @Service
 public class BmdcCsvReaderService {
+
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
+
+    private final Utility utility;
+
+    public BmdcCsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "bmdc.csv";
 
     /**
      * Builds and caches multi-field indexes for Bmdc data:
@@ -28,7 +42,7 @@ public class BmdcCsvReaderService {
      * - Key "BOTH:{code}_{desc}" -> List of items matching both
      */
     @Cacheable(value = "bmdcIndexedCache", key = "#fileName")
-    public Map<String, List<bmdc>> getIndexedBmdcData(String csvDirectoryPath, String fileName) {
+    public Map<String, List<bmdc>> getIndexedBmdcData() {
         System.out.println("--> Building Multi-Index for Bmdc CSV from DISK...");
 
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
@@ -106,15 +120,13 @@ public class BmdcCsvReaderService {
     }
 
     public List<bmdc> readAndFilter(
-            String csvDirectoryPath,
-            String fileName,
             String codeParam,
             String mdcmaleParam,
             String pdcmaleParam,
             String mdcfemParam,
             String pdcfemParam,
             String descParam) {
-        Map<String, List<bmdc>> indexMap = getIndexedBmdcData(csvDirectoryPath, fileName);
+        Map<String, List<bmdc>> indexMap = getIndexedBmdcData();
         boolean hasCode = codeParam != null && !codeParam.trim().isEmpty();
         boolean hasMdcmale = mdcmaleParam != null && !mdcmaleParam.trim().isEmpty();
         boolean hasPdcmale = pdcmaleParam != null && !pdcmaleParam.trim().isEmpty();
@@ -168,8 +180,8 @@ public class BmdcCsvReaderService {
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getBmdcRecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedBmdcData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getBmdcRecordCount() {
+        return getIndexedBmdcData().getOrDefault("ALL", Collections.emptyList()).size();
     }
 
 }

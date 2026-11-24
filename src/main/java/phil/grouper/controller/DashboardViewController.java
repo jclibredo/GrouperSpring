@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import phil.grouper.csvreader.AxCsvReaderService;
 import phil.grouper.csvreader.I10CsvReaderService;
 import phil.grouper.csvreader.I10vxCsvReaderService;
+import phil.grouper.csvreader.ProcCsvReaderService;
 import phil.grouper.csvreader.PrpdcCsvReaderService;
 import phil.grouper.csvreader.DrgCsvReaderService;
 import phil.grouper.csvreader.DcCsvReaderService;
@@ -34,15 +35,20 @@ public class DashboardViewController {
     private final CcexCsvReaderService ccexCsvReaderService;
     private final PrpdcCsvReaderService prpdcCsvReaderService;
     private final CclmCsvReaderService cclmCsvReaderService;
+    private final ProcCsvReaderService procCsvReaderService;
 
-    public DashboardViewController(AxCsvReaderService csvReaderService, I10vxCsvReaderService i10vxCsvReaderService,
-            I10CsvReaderService i10CsvReaderService, DrgCsvReaderService drgCsvReaderService,
+    public DashboardViewController(
+            AxCsvReaderService csvReaderService, 
+            I10vxCsvReaderService i10vxCsvReaderService,
+            I10CsvReaderService i10CsvReaderService, 
+            DrgCsvReaderService drgCsvReaderService,
             DcCsvReaderService dcCsvReaderService,
             DcvCsvReaderService dcvCsvReaderService,
             DaCsvReaderService daCsvReaderService,
             CcexCsvReaderService ccexCsvReaderService,
             PrpdcCsvReaderService prpdcCsvReaderService,
-            CclmCsvReaderService cclmCsvReaderService) {
+            CclmCsvReaderService cclmCsvReaderService,
+            ProcCsvReaderService procCsvReaderService) {
         this.csvReaderService = csvReaderService;
         this.i10vxCsvReaderService = i10vxCsvReaderService;
         this.i10CsvReaderService = i10CsvReaderService;
@@ -53,6 +59,7 @@ public class DashboardViewController {
         this.ccexCsvReaderService = ccexCsvReaderService;
         this.prpdcCsvReaderService = prpdcCsvReaderService;
         this.cclmCsvReaderService = cclmCsvReaderService;
+        this.procCsvReaderService = procCsvReaderService;
     }
 
     @GetMapping("/dashboard")
@@ -61,16 +68,17 @@ public class DashboardViewController {
             model.addAttribute("username", principal.getName());
         }
         // Fetch row count from CSV
-        long axCount = csvReaderService.getAxRecordCount(csvDirectoryPath, "ax.csv");
-        long i10vxCount = i10vxCsvReaderService.getI10vxRecordCount(csvDirectoryPath, "i10vx.csv");
-        long i10Count = i10CsvReaderService.getI10RecordCount(csvDirectoryPath, "i10.csv");
-        long drgCount = drgCsvReaderService.getDrgRecordCount(csvDirectoryPath, "drg.csv");
-        long dcCount = dcCsvReaderService.getDcRecordCount(csvDirectoryPath, "drg.csv");
-        long dcvCount = dcvCsvReaderService.getDcvRecordCount(csvDirectoryPath, "drg.csv");
-        long daCount = daCsvReaderService.getDaRecordCount(csvDirectoryPath, "da.csv");
-        long ccexCount = ccexCsvReaderService.getCcexRecordCount(csvDirectoryPath, "ccex.csv");
-        long prpdcCount = prpdcCsvReaderService.getPrpdcRecordCount(csvDirectoryPath, "prpdc.csv");
-        long cclmCount = cclmCsvReaderService.getRecordCount(csvDirectoryPath, "cclm.csv");
+        long axCount = csvReaderService.getAxRecordCount();
+        long i10vxCount = i10vxCsvReaderService.getI10vxRecordCount();
+        long i10Count = i10CsvReaderService.getI10RecordCount();
+        long drgCount = drgCsvReaderService.getDrgRecordCount();
+        long dcCount = dcCsvReaderService.getDcRecordCount();
+        long dcvCount = dcvCsvReaderService.getDcvRecordCount();
+        long daCount = daCsvReaderService.getDaRecordCount();
+        long ccexCount = ccexCsvReaderService.getCcexRecordCount();
+        long prpdcCount = prpdcCsvReaderService.getPrpdcRecordCount();
+        long cclmCount = cclmCsvReaderService.getRecordCount();
+        long procCount = procCsvReaderService.getProcRecordCount();
         model.addAttribute("axCount", axCount);
         model.addAttribute("i10vxCount", i10vxCount);
         model.addAttribute("i10Count", i10Count);
@@ -81,7 +89,7 @@ public class DashboardViewController {
         model.addAttribute("ccexCount", ccexCount);
         model.addAttribute("prpdcCount", prpdcCount);
         model.addAttribute("cclmCount", cclmCount);
-
+        model.addAttribute("procCount", procCount);
         // Resolves src/main/resources/templates/dashboard.html
         return "dashboard";
     }
@@ -140,6 +148,11 @@ public class DashboardViewController {
     @GetMapping("/cclm")
     public String showCclmPage() {
         return "cclm"; // Renders templates/cclm.html
+    }
+
+    @GetMapping("/proc")
+    public String showProcPage() {
+        return "proc"; // Renders templates/proc.html
     }
 
 }

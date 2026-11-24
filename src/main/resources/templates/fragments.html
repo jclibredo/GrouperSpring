@@ -101,6 +101,12 @@
                 ><i class="fa fa-code-branch"></i> CCLM Management</a
               >
             </li>
+
+            <li th:class="${activePage == 'proc' ? 'active' : ''}">
+              <a th:href="@{/proc}"
+                ><i class="fa fa-code-branch"></i> PROC Management</a
+              >
+            </li>
           </ul>
         </li>
 

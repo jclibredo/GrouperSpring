@@ -11,18 +11,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 
 import phil.grouper.csvbinder.i10;
+import phil.grouper.utility.Utility;
 
 @Service
 public class I10CsvReaderService {
 
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
+
+    private final Utility utility;
+
+    public I10CsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "i10.csv";
+
     @Cacheable(value = "i10IndexedCache", key = "#fileName")
-    public Map<String, List<i10>> getIndexedI10Data(String csvDirectoryPath, String fileName) {
+    public Map<String, List<i10>> getIndexedI10Data() {
         System.out.println("--> Building Code Index for I10 CSV from DISK...");
 
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
@@ -36,7 +50,6 @@ public class I10CsvReaderService {
                     .withIgnoreLeadingWhiteSpace(true)
                     .build()
                     .parse();
-
             Map<String, List<i10>> indexMap = new HashMap<>();
             for (i10 item : list) {
                 String codeVal = (item.getCode() != null) ? item.getCode().trim().toUpperCase() : null;
@@ -53,7 +66,6 @@ public class I10CsvReaderService {
                 String ageminVal = (item.getAgemin() != null) ? item.getAgemin().trim().toUpperCase() : null;
                 String agemaxVal = (item.getAgemax() != null) ? item.getAgemax().trim().toUpperCase() : null;
                 String agedminVal = (item.getAgedmin() != null) ? item.getAgedmin().trim().toUpperCase() : null;
-
                 // Index by 'code'
                 if (codeVal != null && !codeVal.isEmpty()) {
                     indexMap.computeIfAbsent("CODE:" + codeVal, k -> new ArrayList<>()).add(item);
@@ -161,8 +173,6 @@ public class I10CsvReaderService {
      * 'validcode'
      */
     public List<i10> readAndFilter(
-            String csvDirectoryPath,
-            String fileName,
             String codeParam,
             String mdcParam,
             String pdcParam,
@@ -176,7 +186,7 @@ public class I10CsvReaderService {
             String ageminParam,
             String agemaxParam,
             String agedminParam) {
-        Map<String, List<i10>> indexMap = getIndexedI10Data(csvDirectoryPath, fileName);
+        Map<String, List<i10>> indexMap = getIndexedI10Data();
         // Step 2: Apply secondary filter for desc and validcode if provided
         boolean hasCode = codeParam != null && !codeParam.trim().isEmpty();
         boolean hasMdc = mdcParam != null && !mdcParam.trim().isEmpty();
@@ -294,7 +304,7 @@ public class I10CsvReaderService {
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getI10RecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedI10Data(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getI10RecordCount() {
+        return getIndexedI10Data().getOrDefault("ALL", Collections.emptyList()).size();
     }
 }

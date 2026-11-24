@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("sidebarToggle");
   const sidebar = document.getElementById("sidebar");
-  const mainContent = document.querySelector(".main-content");
+  // const mainContent = document.querySelector(".main-content");
 
   if (toggleBtn && sidebar) {
     toggleBtn.addEventListener("click", (e) => {

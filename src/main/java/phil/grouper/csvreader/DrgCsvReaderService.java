@@ -11,12 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 
 import phil.grouper.csvbinder.drg;
+import phil.grouper.utility.Utility;
 
 @Service
 public class DrgCsvReaderService {
@@ -26,8 +28,20 @@ public class DrgCsvReaderService {
      * - Key "DESC:{descVal}" -> List of items with that 'desc'
      * - Key "BOTH:{code}_{desc}" -> List of items matching both
      */
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
+
+    private final Utility utility;
+
+    public DrgCsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "drg.csv";
+
     @Cacheable(value = "drgIndexedCache", key = "#fileName")
-    public Map<String, List<drg>> getIndexedDrgData(String csvDirectoryPath, String fileName) {
+    public Map<String, List<drg>> getIndexedDrgData() {
         System.out.println("--> Building Multi-Index for Drg CSV from DISK...");
 
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
@@ -44,14 +58,14 @@ public class DrgCsvReaderService {
 
             Map<String, List<drg>> indexMap = new HashMap<>();
             for (drg item : list) {
-                String mdcVal       = (item.getMdc()        != null) ? item.getMdc().trim().toUpperCase() : null;
-                String dcVal        = (item.getDc()         != null) ? item.getDc().trim().toUpperCase() : null;
-                String drgVal       = (item.getDrg()        != null) ? item.getDrg().trim().toUpperCase() : null;
-                String rwVal        = (item.getRw()         != null) ? item.getRw().trim().toUpperCase() : null;
-                String wtlosVal     = (item.getWtlos()      != null) ? item.getWtlos().trim().toUpperCase() : null;
-                String otVal        = (item.getOt()         != null) ? item.getOt().trim().toUpperCase() : null;
-                String mdfVal       = (item.getMdf()        != null) ? item.getMdf().trim().toUpperCase() : null;
-                String drgnameVal   = (item.getDrgname()    != null) ? item.getDrgname().trim().toUpperCase() : null;
+                String mdcVal = (item.getMdc() != null) ? item.getMdc().trim().toUpperCase() : null;
+                String dcVal = (item.getDc() != null) ? item.getDc().trim().toUpperCase() : null;
+                String drgVal = (item.getDrg() != null) ? item.getDrg().trim().toUpperCase() : null;
+                String rwVal = (item.getRw() != null) ? item.getRw().trim().toUpperCase() : null;
+                String wtlosVal = (item.getWtlos() != null) ? item.getWtlos().trim().toUpperCase() : null;
+                String otVal = (item.getOt() != null) ? item.getOt().trim().toUpperCase() : null;
+                String mdfVal = (item.getMdf() != null) ? item.getMdf().trim().toUpperCase() : null;
+                String drgnameVal = (item.getDrgname() != null) ? item.getDrgname().trim().toUpperCase() : null;
 
                 // Index by 'code'
                 if (mdcVal != null && !mdcVal.isEmpty()) {
@@ -94,23 +108,23 @@ public class DrgCsvReaderService {
                 }
                 // Index by both 'mdc','mdcmale','pdcmale', 'mdcfem','pdcfem','desc' if
                 // applicable
-                if (    mdcVal      != null && !mdcVal.isEmpty() &&
-                        dcVal       != null && !dcVal.isEmpty() &&
-                        drgVal      != null && !drgVal.isEmpty() &&
-                        rwVal       != null && !rwVal.isEmpty() &&
-                        wtlosVal    != null && !wtlosVal.isEmpty() &&
-                        otVal       != null && !otVal.isEmpty() &&
-                        mdfVal      != null && !mdfVal.isEmpty() &&
-                        drgnameVal  != null && !drgnameVal.isEmpty()) {
-                    indexMap.computeIfAbsent("BOTH:" 
-                    + mdcVal + "_" 
-                    + dcVal + "_" 
-                    + drgVal + "_" 
-                    + rwVal+ "_" 
-                    + wtlosVal + "_" 
-                    + otVal + "_" 
-                    + mdfVal + "_" 
-                    + drgnameVal, k -> new ArrayList<>())
+                if (mdcVal != null && !mdcVal.isEmpty() &&
+                        dcVal != null && !dcVal.isEmpty() &&
+                        drgVal != null && !drgVal.isEmpty() &&
+                        rwVal != null && !rwVal.isEmpty() &&
+                        wtlosVal != null && !wtlosVal.isEmpty() &&
+                        otVal != null && !otVal.isEmpty() &&
+                        mdfVal != null && !mdfVal.isEmpty() &&
+                        drgnameVal != null && !drgnameVal.isEmpty()) {
+                    indexMap.computeIfAbsent("BOTH:"
+                            + mdcVal + "_"
+                            + dcVal + "_"
+                            + drgVal + "_"
+                            + rwVal + "_"
+                            + wtlosVal + "_"
+                            + otVal + "_"
+                            + mdfVal + "_"
+                            + drgnameVal, k -> new ArrayList<>())
                             .add(item);
                 }
 
@@ -126,8 +140,6 @@ public class DrgCsvReaderService {
     }
 
     public List<drg> readAndFilter(
-            String csvDirectoryPath,
-            String fileName,
             String mdcParam,
             String dcParam,
             String drgParam,
@@ -136,7 +148,7 @@ public class DrgCsvReaderService {
             String otParam,
             String mdfParam,
             String drgnameParam) {
-        Map<String, List<drg>> indexMap = getIndexedDrgData(csvDirectoryPath, fileName);
+        Map<String, List<drg>> indexMap = getIndexedDrgData();
         boolean hasMdc = mdcParam != null && !mdcParam.trim().isEmpty();
         boolean hasDc = dcParam != null && !dcParam.trim().isEmpty();
         boolean hasDrg = drgParam != null && !drgParam.trim().isEmpty();
@@ -171,8 +183,8 @@ public class DrgCsvReaderService {
                     + cleanDrg + "_"
                     + cleanRw + "_"
                     + cleanWtlos + "_"
-                    + cleanOt + "_" 
-                    + cleanMdf + "_" 
+                    + cleanOt + "_"
+                    + cleanMdf + "_"
                     + cleanDrgname, Collections.emptyList());
         }
         // Case 2: Search by MDC only
@@ -211,7 +223,7 @@ public class DrgCsvReaderService {
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getDrgRecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedDrgData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getDrgRecordCount() {
+        return getIndexedDrgData().getOrDefault("ALL", Collections.emptyList()).size();
     }
 }

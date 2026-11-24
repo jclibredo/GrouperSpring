@@ -11,12 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 
 import phil.grouper.csvbinder.da;
+import phil.grouper.utility.Utility;
 
 @Service
 public class DaCsvReaderService {
@@ -26,8 +28,20 @@ public class DaCsvReaderService {
      * - Key "CODE:{codeVal}" -> List of items with that 'code'
      * - Key "BOTH:{ax}_{code}" -> List of items matching both
      */
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
+
+    private final Utility utility;
+
+    public DaCsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "da.csv";
+
     @Cacheable(value = "daIndexedCache", key = "#fileName")
-    public Map<String, List<da>> getIndexedDaData(String csvDirectoryPath, String fileName) {
+    public Map<String, List<da>> getIndexedDaData() {
         System.out.println("--> Building Multi-Index for AX CSV from DISK...");
 
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
@@ -69,8 +83,10 @@ public class DaCsvReaderService {
                 }
 
                 // Index by both 'ax' and 'code'
-                if (daggerVal != null && !daggerVal.isEmpty() && asteriskVal != null && !asteriskVal.isEmpty() && pdxVal != null && !pdxVal.isEmpty() && sdxVal != null && !sdxVal.isEmpty()) {
-                    indexMap.computeIfAbsent("BOTH:" + daggerVal + "_" + asteriskVal + "_" + pdxVal + "_" + sdxVal, k -> new ArrayList<>()).add(item);
+                if (daggerVal != null && !daggerVal.isEmpty() && asteriskVal != null && !asteriskVal.isEmpty()
+                        && pdxVal != null && !pdxVal.isEmpty() && sdxVal != null && !sdxVal.isEmpty()) {
+                    indexMap.computeIfAbsent("BOTH:" + daggerVal + "_" + asteriskVal + "_" + pdxVal + "_" + sdxVal,
+                            k -> new ArrayList<>()).add(item);
                 }
 
                 // Keep a 'ALL' key for unfiltered queries
@@ -88,19 +104,15 @@ public class DaCsvReaderService {
      * O(1) Instant Lookup using cached multi-indexes
      */
     public List<da> readAndFilter(
-            String csvDirectoryPath,
-            String fileName,
             String daggerParam,
             String asteriskParam,
             String pdxParam,
             String sdxParam) {
-        Map<String, List<da>> indexMap = getIndexedDaData(csvDirectoryPath, fileName);
-
-        boolean hasDagger   = daggerParam != null && !daggerParam.trim().isEmpty();
+        Map<String, List<da>> indexMap = getIndexedDaData();
+        boolean hasDagger = daggerParam != null && !daggerParam.trim().isEmpty();
         boolean hasAsterisk = asteriskParam != null && !asteriskParam.trim().isEmpty();
-        boolean hasPdx      = pdxParam != null && !pdxParam.trim().isEmpty();
-        boolean hasSdx      = sdxParam != null && !sdxParam.trim().isEmpty();
-
+        boolean hasPdx = pdxParam != null && !pdxParam.trim().isEmpty();
+        boolean hasSdx = sdxParam != null && !sdxParam.trim().isEmpty();
         @SuppressWarnings("null")
         String cleanDagger = hasDagger ? daggerParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
@@ -140,7 +152,7 @@ public class DaCsvReaderService {
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getDaRecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedDaData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getDaRecordCount() {
+        return getIndexedDaData().getOrDefault("ALL", Collections.emptyList()).size();
     }
 }

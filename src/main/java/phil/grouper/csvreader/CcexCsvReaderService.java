@@ -10,10 +10,13 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import com.opencsv.bean.CsvToBeanBuilder;
 import phil.grouper.csvbinder.ccex;
+import phil.grouper.utility.Utility;
 
 @Service
 public class CcexCsvReaderService {
@@ -23,8 +26,20 @@ public class CcexCsvReaderService {
      * - Key "PDX:{pdxVal}" -> List of items with that 'pdx'
      * - Key "BOTH:{sdx}_{pdx}" -> List of items matching both
      */
+    @Value("${grouper.csv.dir}")
+    private String csvDirectoryPath;
+
+    private final Utility utility;
+
+    public CcexCsvReaderService(
+            Utility utility) {
+        this.utility = utility;
+    }
+
+    String fileName = "ccex.csv";
+
     @Cacheable(value = "ccexIndexedCache", key = "#fileName")
-    public Map<String, List<ccex>> getIndexedCcexData(String csvDirectoryPath, String fileName) {
+    public Map<String, List<ccex>> getIndexedCcexData() {
         System.out.println("--> Building Multi-Index for CCEX CSV from DISK...");
 
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
@@ -62,7 +77,6 @@ public class CcexCsvReaderService {
                 // Keep a 'ALL' key for unfiltered queries
                 indexMap.computeIfAbsent("ALL", k -> new ArrayList<>()).add(item);
             }
-
             return indexMap;
 
         } catch (Exception e) {
@@ -71,11 +85,9 @@ public class CcexCsvReaderService {
     }
 
     public List<ccex> readAndFilter(
-        String csvDirectoryPath, 
-        String fileName, 
-        String sdxParam, 
-        String pdxParam) {
-        Map<String, List<ccex>> indexMap = getIndexedCcexData(csvDirectoryPath, fileName);
+            String sdxParam,
+            String pdxParam) {
+        Map<String, List<ccex>> indexMap = getIndexedCcexData();
 
         boolean hasSdx = sdxParam != null && !sdxParam.trim().isEmpty();
         boolean hasPdx = pdxParam != null && !pdxParam.trim().isEmpty();
@@ -103,7 +115,7 @@ public class CcexCsvReaderService {
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getCcexRecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedCcexData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getCcexRecordCount() {
+        return getIndexedCcexData().getOrDefault("ALL", Collections.emptyList()).size();
     }
 }
