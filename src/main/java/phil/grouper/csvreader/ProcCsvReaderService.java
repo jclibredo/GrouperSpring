@@ -10,14 +10,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.cache.annotation.Cacheable;
-
+import org.springframework.stereotype.Service;
 import com.opencsv.bean.CsvToBeanBuilder;
-
-import phil.grouper.csvbinder.i10;
 import phil.grouper.csvbinder.proc;
 
+@Service
 public class ProcCsvReaderService {
 
     @Cacheable(value = "procIndexedCache", key = "#fileName")
@@ -146,138 +144,111 @@ public class ProcCsvReaderService {
             String csvDirectoryPath,
             String fileName,
             String codeParam,
-            String mdcParam,
-            String pdcParam,
-            String ccParam,
-            String mainccParam,
-            String ccrowParam,
-            String hivaxParam,
+            String orptypeParam,
             String sexParam,
-            String accpdxParam,
-            String ageduseParam,
-            String ageminParam,
-            String agemaxParam,
-            String agedminParam) {
+            String siteParam,
+            String procgrParam,
+            String pcpartParam,
+            String extlevParam,
+            String descParam,
+            String drguseParam,
+            String mayunParam) {
         Map<String, List<proc>> indexMap = getIndexedProcData(csvDirectoryPath, fileName);
         // Step 2: Apply secondary filter for desc and validcode if provided
         boolean hasCode = codeParam != null && !codeParam.trim().isEmpty();
-        boolean hasMdc = mdcParam != null && !mdcParam.trim().isEmpty();
-        boolean hasPdc = pdcParam != null && !pdcParam.trim().isEmpty();
-        boolean hasCc = ccParam != null && !ccParam.trim().isEmpty();
-        boolean hasMaincc = mainccParam != null && !mainccParam.trim().isEmpty();
-        boolean hasCcrow = ccrowParam != null && !ccrowParam.trim().isEmpty();
-        boolean hasHivax = hivaxParam != null && !hivaxParam.trim().isEmpty();
+        boolean hasOrptype = orptypeParam != null && !orptypeParam.trim().isEmpty();
         boolean hasSex = sexParam != null && !sexParam.trim().isEmpty();
-        boolean hasAccpdx = accpdxParam != null && !accpdxParam.trim().isEmpty();
-        boolean hasAgeduse = ageduseParam != null && !ageduseParam.trim().isEmpty();
-        boolean hasAgemin = ageminParam != null && !ageminParam.trim().isEmpty();
-        boolean hasAgemax = agemaxParam != null && !agemaxParam.trim().isEmpty();
-        boolean hasAgedmin = agedminParam != null && !agedminParam.trim().isEmpty();
+        boolean hasSite = siteParam != null && !siteParam.trim().isEmpty();
+        boolean hasProcgr = procgrParam != null && !procgrParam.trim().isEmpty();
+        boolean hasPcpart = pcpartParam != null && !pcpartParam.trim().isEmpty();
+        boolean hasExtlev = extlevParam != null && !extlevParam.trim().isEmpty();
+        boolean hasDesc = descParam != null && !descParam.trim().isEmpty();
+        boolean hasDrguse = drguseParam != null && !drguseParam.trim().isEmpty();
+        boolean hasMayun = mayunParam != null && !mayunParam.trim().isEmpty();
 
         @SuppressWarnings("null")
         String cleanCode = hasCode ? codeParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
-        String cleanMdc = hasMdc ? mdcParam.trim().toUpperCase() : "";
-        @SuppressWarnings("null")
-        String cleanPdc = hasPdc ? pdcParam.trim().toUpperCase() : "";
-        @SuppressWarnings("null")
-        String cleanCc = hasCc ? ccParam.trim().toUpperCase() : "";
-        @SuppressWarnings("null")
-        String cleanMaincc = hasMaincc ? mainccParam.trim().toUpperCase() : "";
-        @SuppressWarnings("null")
-        String cleanCcrow = hasCcrow ? ccrowParam.trim().toUpperCase() : "";
-        @SuppressWarnings("null")
-        String cleanHivax = hasHivax ? hivaxParam.trim().toUpperCase() : "";
+        String cleanOrptype = hasOrptype ? orptypeParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
         String cleanSex = hasSex ? sexParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
-        String cleanAccpdx = hasAccpdx ? accpdxParam.trim().toUpperCase() : "";
+        String cleanSite = hasSite ? siteParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
-        String cleanAgeduse = hasAgeduse ? ageduseParam.trim().toUpperCase() : "";
+        String cleanProcgr = hasProcgr ? procgrParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
-        String cleanAgemin = hasAgemin ? ageminParam.trim().toUpperCase() : "";
+        String cleanPcpart = hasPcpart ? pcpartParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
-        String cleanAgemax = hasAgemax ? agemaxParam.trim().toUpperCase() : "";
+        String cleanExtlev = hasExtlev ? extlevParam.trim().toUpperCase() : "";
         @SuppressWarnings("null")
-        String cleanAgedmin = hasAgedmin ? agedminParam.trim().toUpperCase() : "";
+        String cleanDesc = hasDesc ? descParam.trim().toUpperCase() : "";
+        @SuppressWarnings("null")
+        String cleanDrguse = hasDrguse ? drguseParam.trim().toUpperCase() : "";
+        @SuppressWarnings("null")
+        String cleanMayun = hasMayun ? mayunParam.trim().toUpperCase() : "";
 
         // Case 1: Search by all parameters
-        if (hasCode && hasMdc && hasPdc && hasCc && hasMaincc && hasCcrow && hasHivax && hasSex && hasAccpdx
-                && hasAgeduse && hasAgemin && hasAgemax && hasAgedmin) {
+        if (hasCode && hasOrptype && hasSex && hasSite && hasProcgr && hasPcpart && hasExtlev && hasDesc && hasDrguse
+                && hasMayun) {
             return indexMap.getOrDefault("BOTH:"
                     + cleanCode + "_"
-                    + cleanMdc + "_"
-                    + cleanPdc + "_"
-                    + cleanCc + "_"
-                    + cleanMaincc + "_"
-                    + cleanCcrow + "_"
-                    + cleanHivax + "_"
+                    + cleanOrptype + "_"
                     + cleanSex + "_"
-                    + cleanAccpdx + "_"
-                    + cleanAgeduse + "_"
-                    + cleanAgemin + "_"
-                    + cleanAgemax + "_"
-                    + cleanAgedmin,
+                    + cleanSite + "_"
+                    + cleanProcgr + "_"
+                    + cleanPcpart + "_"
+                    + cleanExtlev + "_"
+                    + cleanDesc + "_"
+                    + cleanDrguse + "_"
+                    + cleanMayun,
                     Collections.emptyList());
         }
         // Case 2: Search by Code only
         if (hasCode) {
             return indexMap.getOrDefault("CODE:" + cleanCode, Collections.emptyList());
         }
-        // Case 3: Search by Mdc only
-        if (hasMdc) {
-            return indexMap.getOrDefault("MDC:" + cleanMdc, Collections.emptyList());
+        // Case 3: Search by Orptype only
+        if (hasOrptype) {
+            return indexMap.getOrDefault("ORPTYPE:" + cleanOrptype, Collections.emptyList());
         }
-        // Case 4: Search by Pdc only
-        if (hasPdc) {
-            return indexMap.getOrDefault("PDC:" + cleanPdc, Collections.emptyList());
-        }
-        // Case 5: Search byCc only
-        if (hasCc) {
-            return indexMap.getOrDefault("CC:" + cleanCc, Collections.emptyList());
-        }
-        // Case 6: Search by Maincc only
-        if (hasMaincc) {
-            return indexMap.getOrDefault("MAINCC:" + cleanMaincc, Collections.emptyList());
-        }
-        // Case 7: Search by Ccrow only
-        if (hasCcrow) {
-            return indexMap.getOrDefault("CCROW:" + cleanCcrow, Collections.emptyList());
-        }
-        // Case 8: Search by Hiv_ax only
-        if (hasHivax) {
-            return indexMap.getOrDefault("HIV_AX:" + cleanHivax, Collections.emptyList());
-        }
-        // Case 9: Search by Sex only
+        // Case 4: Search by Sex only
         if (hasSex) {
             return indexMap.getOrDefault("SEX:" + cleanSex, Collections.emptyList());
         }
-        // Case 10: Search by Accpdx only
-        if (hasAccpdx) {
-            return indexMap.getOrDefault("ACCPDX:" + cleanAccpdx, Collections.emptyList());
+        // Case 5: Search bySite only
+        if (hasSite) {
+            return indexMap.getOrDefault("SITE:" + cleanSite, Collections.emptyList());
         }
-        // Case 11: Search by Ageduse only
-        if (hasAgeduse) {
-            return indexMap.getOrDefault("AGEDUSE:" + cleanAgeduse, Collections.emptyList());
+        // Case 6: Search by Procgr only
+        if (hasProcgr) {
+            return indexMap.getOrDefault("PROCGR:" + cleanProcgr, Collections.emptyList());
         }
-        // Case 12: Search by Agemin only
-        if (hasAgemin) {
-            return indexMap.getOrDefault("AGEMIN:" + cleanAgemin, Collections.emptyList());
+        // Case 7: Search by Pcpart only
+        if (hasPcpart) {
+            return indexMap.getOrDefault("PCPART:" + cleanPcpart, Collections.emptyList());
         }
-        // Case 13: Search by Agemax only
-        if (hasAgemax) {
-            return indexMap.getOrDefault("AGEMAX:" + cleanAgemax, Collections.emptyList());
+        // Case 8: Search by Extlev only
+        if (hasExtlev) {
+            return indexMap.getOrDefault("EXTLEV:" + cleanExtlev, Collections.emptyList());
         }
-        // Case 14: Search by Agedmin only
-        if (hasAgedmin) {
-            return indexMap.getOrDefault("AGEDMIN:" + cleanAgedmin, Collections.emptyList());
+        // Case 9: Search by Desc only
+        if (hasDesc) {
+            return indexMap.getOrDefault("DESC:" + cleanDesc, Collections.emptyList());
+        }
+        // Case 10: Search by Drguse only
+        if (hasDrguse) {
+            return indexMap.getOrDefault("DRGUSE:" + cleanDrguse, Collections.emptyList());
+        }
+        // Case 11: Search by Mayun only
+        if (hasMayun) {
+            return indexMap.getOrDefault("MAYUN:" + cleanMayun, Collections.emptyList());
         }
         // Case 15: No params -> Return all records
         return indexMap.getOrDefault("ALL", Collections.emptyList());
     }
 
-    public long getI10RecordCount(String csvDirectoryPath, String fileName) {
-        return getIndexedI10Data(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
+    public long getPROCRecordCount(String csvDirectoryPath, String fileName) {
+        return getIndexedProcData(csvDirectoryPath, fileName).getOrDefault("ALL", Collections.emptyList()).size();
     }
 
 }
