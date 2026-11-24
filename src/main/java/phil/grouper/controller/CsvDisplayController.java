@@ -36,6 +36,7 @@ import phil.grouper.csvreader.I10CsvReaderService;
 import phil.grouper.csvreader.I10vxCsvReaderService;
 import phil.grouper.csvreader.ProcCsvReaderService;
 import phil.grouper.csvreader.PrpdcCsvReaderService;
+import phil.grouper.entity.DRGWSResult;
 
 @RestController
 @RequestMapping("/api/csv")
@@ -325,5 +326,13 @@ public class CsvDisplayController {
         List<proc> records = procCsvReaderService.readAndFilter(
                 code, orp, orptype, sex, site, procgr, pcpart, extlev, desc, drguse, mayun);
         return ResponseEntity.ok(records);
+    }
+
+    @GetMapping("/axes")
+    public ResponseEntity<DRGWSResult> validateAx(
+            @RequestParam(required = false, defaultValue = "") String axcodes,
+            @RequestParam(required = false, defaultValue = "") String requestcode) {
+        DRGWSResult result = csvReaderService.AX(axcodes, requestcode);
+        return ResponseEntity.ok(result);
     }
 }

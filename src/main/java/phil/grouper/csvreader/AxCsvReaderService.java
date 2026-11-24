@@ -35,7 +35,6 @@ public class AxCsvReaderService {
     @Value("${grouper.csv.dir}")
     private String csvDirectoryPath;
 
-
     private final Utility utility;
 
     public AxCsvReaderService(
@@ -45,9 +44,8 @@ public class AxCsvReaderService {
 
     String fileName = "ax.csv";
 
-    @Cacheable(value = "axIndexedCache", key = "#fileName")
+    @Cacheable(value = "axIndexedCache", key = "'ax.csv'")
     public Map<String, List<ax>> getIndexedAxData() {
-        System.out.println("--> Building Multi-Index for AX CSV from DISK...");
         Path fullPath = Paths.get(csvDirectoryPath, fileName);
         if (!Files.exists(fullPath)) {
             return Collections.emptyMap();
@@ -77,7 +75,6 @@ public class AxCsvReaderService {
                 // Keep a 'ALL' key for unfiltered queries
                 indexMap.computeIfAbsent("ALL", k -> new ArrayList<>()).add(item);
             }
-            System.out.println(utility.objectMapper().writeValueAsString(indexMap));
             return indexMap;
         } catch (Exception e) {
             throw new RuntimeException("Failed to read CSV file at " + fullPath, e);
@@ -109,6 +106,7 @@ public class AxCsvReaderService {
         }
         // Case 4: No params -> Return all records
         return indexMap.getOrDefault("ALL", Collections.emptyList());
+
     }
 
     public long getAxRecordCount() {
@@ -116,22 +114,19 @@ public class AxCsvReaderService {
     }
 
     public DRGWSResult AX(
-            final AxCsvReaderService axCsvReaderService,
             final String axcodes,
             final String requestcode) {
         DRGWSResult result = utility.DRGWSResult();
         result.setMessage("");
         result.setResult("");
         result.setSuccess(false);
-
         try {
             String cleanAx = axcodes != null ? axcodes.trim() : "";
             String cleanCode = requestcode != null ? requestcode.trim() : "";
-
-            List<ax> matches = axCsvReaderService.readAndFilter(
+            List<ax> matches = this.readAndFilter(
                     cleanAx,
                     cleanCode);
-
+            System.out.println("AX matches: " + matches.size());
             if (matches != null && !matches.isEmpty()) {
                 // THIS LINE IS FOR OLD LIBRARY
                 result.setResult(cleanCode);
@@ -141,7 +136,6 @@ public class AxCsvReaderService {
             result.setMessage("Something went wrong AX");
             Logger.getLogger(AxCsvReaderService.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return result;
     }
 }
